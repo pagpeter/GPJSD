@@ -1,0 +1,140 @@
+<html>
+	<head>
+		<title>General purpose JS deobber</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.6.0/build/styles/default.min.css">
+        <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.6.0/build/highlight.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.6.0/build/languages/javascript.min.js"></script>
+	</head>	
+
+	<body class="m-5 bg-gray-900 text-gray-50">
+        <script>
+            hljs.highlightAll();
+
+            const download = () => {
+                const filename = "deobfuscated.js"
+                const text = window.deobbed
+                let element = document.createElement('a');
+                element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+                element.setAttribute('download', filename);
+
+                element.style.display = 'none';
+                document.body.appendChild(element);
+
+                element.click();
+
+                document.body.removeChild(element);
+            }
+
+            const deob = () => {
+                const code = document.getElementById("code").value
+                const url = document.getElementById("url").value
+
+                const options = [
+                    "unused_code",
+                    "dead_else",
+                    "hidden_false",
+                    "dot_notation",
+                    "actual_value",
+                    "comma_seperated",
+                    "concealed_strings",
+                    "remove_comments",
+                    "beautify",
+                    "remove_useless_if"
+                ]
+
+                let chosen = {}
+
+                options.forEach(element => {
+                    chosen[element] = document.getElementById(element).checked
+                });
+
+                fetch("/api/deobfuscate", {
+                    method: "POST",
+                    body: JSON.stringify({
+                        code,
+                        url,
+                        chosen,
+                    })
+                }).then((data) => {
+                    return data.json()
+                }).then((data) => {
+                    window.deobbed = data.result
+                    document.getElementById("result").innerHTML = data.result
+                    hljs.highlightAll();
+                    document.getElementById("loc").innerText = "Lines of code: " + data.result.split("\n").length
+                })
+            }
+
+        </script>
+
+		<h1 class="text-2xl m-3">General purpose JavaScript deobfuscator</h1>
+	
+        <textarea class="bg-gray-500 shadow-xl rounded-md p-3 m-2 w-full h-52" id="code" name="code" placeholder="Obfuscated JavaScript"></textarea><br>
+        <input class="bg-gray-600 shadow-xl rounded-md p-3 m-2" id="url" name="url" placeholder="Remote JavaScript" type="url"><br>
+
+		<h1 class="text-2xl m-3">Transformations</h1>
+
+
+        <div class="flex flex-wrap">
+            <div class="p-2 m-2 bg-gray-600 shadow-xl rounded-md flex flex-row">
+                <input type="checkbox" id="unused_code" name="unused_code" class="w-4 h-4 rounded border-gray-300 focus:ring-blue-600 ring-offset-gray-800 bg-gray-700 border-gray-600">
+                <label for="unused_code" class="ml-2 text-sm font-medium text-gray-300">Unused code</label>
+            </div>
+
+            <div class="p-2 m-2 bg-gray-600 shadow-xl rounded-md flex flex-row">
+                <input checked type="checkbox" id="dead_else" name="dead_else" class="w-4 h-4 rounded border-gray-300 focus:ring-blue-600 ring-offset-gray-800 bg-gray-700 border-gray-600">
+                <label for="dead_else" class="ml-2 text-sm font-medium text-gray-300">Dead else statements</label>
+            </div>
+
+            <div class="p-2 m-2 bg-gray-600 shadow-xl rounded-md flex flex-row">
+                <input checked type="checkbox" id="hidden_false" name="hidden_false" class="w-4 h-4 rounded border-gray-300 focus:ring-blue-600 ring-offset-gray-800 bg-gray-700 border-gray-600">
+                <label for="hidden_false" class="ml-2 text-sm font-medium text-gray-300">Hidden booleans</label>
+            </div>
+
+            <div class="p-2 m-2 bg-gray-600 shadow-xl rounded-md flex flex-row">
+                <input checked type="checkbox" id="dot_notation" name="unused_code" class="w-4 h-4 rounded border-gray-300 focus:ring-blue-600 ring-offset-gray-800 bg-gray-700 border-gray-600">
+                <label for="dot_notation" class="ml-2 text-sm font-medium text-gray-300">Change to dot notation</label>
+            </div>
+
+            <div class="p-2 m-2 bg-gray-600 shadow-xl rounded-md flex flex-row">
+                <input checked type="checkbox" id="actual_value" name="actual_value" class="w-4 h-4 rounded border-gray-300 focus:ring-blue-600 ring-offset-gray-800 bg-gray-700 border-gray-600">
+                <label for="actual_value" class="ml-2 text-sm font-medium text-gray-300">Replace references to constants</label>
+            </div>
+
+            <div class="p-2 m-2 bg-gray-600 shadow-xl rounded-md flex flex-row">
+                <input checked type="checkbox" id="comma_seperated" name="comma_seperated" class="w-4 h-4 rounded border-gray-300 focus:ring-blue-600 ring-offset-gray-800 bg-gray-700 border-gray-600">
+                <label for="comma_seperated" class="ml-2 text-sm font-medium text-gray-300">Clean up comma seperated</label>
+            </div>
+
+            <div class="p-2 m-2 bg-gray-600 shadow-xl rounded-md flex flex-row">
+                <input checked type="checkbox" id="concealed_strings" name="concealed_strings" class="w-4 h-4 rounded border-gray-300 focus:ring-blue-600 ring-offset-gray-800 bg-gray-700 border-gray-600">
+                <label for="concealed_strings" class="ml-2 text-sm font-medium text-gray-300">Concealed strings and numbers</label>
+            </div>
+
+            <div class="p-2 m-2 bg-gray-600 shadow-xl rounded-md flex flex-row">
+                <input checked type="checkbox" id="remove_comments" name="remove_comments" class="w-4 h-4 rounded border-gray-300 focus:ring-blue-600 ring-offset-gray-800 bg-gray-700 border-gray-600">
+                <label for="remove_comments" class="ml-2 text-sm font-medium text-gray-300">Remove comments</label>
+            </div>
+
+            <div class="p-2 m-2 bg-gray-600 shadow-xl rounded-md flex flex-row">
+                <input checked type="checkbox" id="remove_useless_if" name="remove_useless_if" class="w-4 h-4 rounded border-gray-300 focus:ring-blue-600 ring-offset-gray-800 bg-gray-700 border-gray-600">
+                <label for="remove_useless_if" class="ml-2 text-sm font-medium text-gray-300">Useless if statements</label>
+            </div>
+
+            <div class="p-2 m-2 bg-gray-600 shadow-xl rounded-md flex flex-row">
+                <input checked type="checkbox" id="beautify" name="beautify" class="w-4 h-4 rounded border-gray-300 focus:ring-blue-600 ring-offset-gray-800 bg-gray-700 border-gray-600">
+                <label for="beautify" class="ml-2 text-sm font-medium text-gray-300">Beautify</label>
+            </div>
+        </div>
+
+        <button onclick="deob()" class="bg-green-500 shadow-xl rounded-md p-3 px-4 m-2">Deobfuscate</button><br>
+        
+        <pre><code class="language-javascript whitespace-pre-wrap bg-gray-300 shadow-xl rounded-md p-3 m-2 w-full h-52" id="result" disabled></code></pre>
+        <button onclick="download()" class="bg-green-500 shadow-xl rounded-md p-3 px-4 m-2">Download</button><br>
+        
+        <p id="loc"></p>
+	</body>
+</html>

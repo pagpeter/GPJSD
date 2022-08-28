@@ -1,0 +1,13 @@
+{
+  "dependencies": {
+    "@babel/generator": "^7.18.13",
+    "@babel/parser": "^7.18.13",
+    "@babel/traverse": "^7.18.13",
+    "@babel/types": "^7.18.13",
+    "@fastify/formbody": "^7.1.0",
+    "@fastify/static": "^6.5.0",
+    "axios": "^0.27.2",
+    "fastify": "^4.5.3",
+    "js-beautify": "^1.14.6"
+  }
+}
