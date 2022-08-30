@@ -315,7 +315,7 @@ const rename_identifiers = (ast) => {
   const letters = "A B C D E F G H I J K L M N O P Q R S T U V W  X Y Z".split(" ") 
 
   traverse(ast, {
-    FunctionDeclaration(path) {
+    "FunctionDeclaration|FunctionExpression|"(path) {
       let paramsToRename = {}
       path.node.params.forEach((elem, i) => {
         if (i <= 26) paramsToRename[elem.name] = `param${letters[i]}`
