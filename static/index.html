@@ -42,7 +42,8 @@
                     "concealed_strings",
                     "remove_comments",
                     "beautify",
-                    "remove_useless_if"
+                    "remove_useless_if",
+                    "rename_identifiers"
                 ]
 
                 let chosen = {}
@@ -127,6 +128,11 @@
             <div class="p-2 m-2 bg-gray-600 shadow-xl rounded-md flex flex-row">
                 <input checked type="checkbox" id="beautify" name="beautify" class="w-4 h-4 rounded border-gray-300 focus:ring-blue-600 ring-offset-gray-800 bg-gray-700 border-gray-600">
                 <label for="beautify" class="ml-2 text-sm font-medium text-gray-300">Beautify</label>
+            </div>
+
+            <div class="p-2 m-2 bg-gray-600 shadow-xl rounded-md flex flex-row">
+                <input checked type="checkbox" id="rename_identifiers" name="rename_identifiers" class="w-4 h-4 rounded border-gray-300 focus:ring-blue-600 ring-offset-gray-800 bg-gray-700 border-gray-600">
+                <label for="rename_identifiers" class="ml-2 text-sm font-medium text-gray-300">Rename identifiers</label>
             </div>
         </div>
 

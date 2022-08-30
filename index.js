@@ -31,6 +31,7 @@ const deobfuscate = (code, opts) => {
     if (opts.concealed_strings) deob.remove_hex_numbers(ast)
     if (opts.dead_else) deob.remove_dead_else(ast)
     if (opts.remove_useless_if) deob.remove_useless_if(ast)
+    if (opts.rename_identifiers) deob.rename_identifiers(ast)
 
     
     const newCode = deob.ast_to_code(ast, opts.remove_comments)
