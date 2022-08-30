@@ -9,12 +9,99 @@
         <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.6.0/build/languages/javascript.min.js"></script>
 	</head>	
 
-	<body class="m-5 bg-gray-900 text-gray-50">
+	<body class="m-5 bg-gray-900 text-gray-50" onload="insertOptions()">
         <script>
+            const options = [
+                {
+                    id: "unused_code",
+                    exp: "Remove unused code",
+                    tt: "Removes unused code, for example functions that are never called and variables that are never used",
+                    checked: false
+                },
+                {
+                    id: "dead_else",
+                    exp: "Remove empty else statements",
+                    tt: "",
+                    checked: true,
+                }, 
+                {
+                    id: "hidden_false",
+                    exp: "Deobfuscate booleans",
+                    tt: "Example: changes ![] to false or !![] to true",
+                    checked: true,
+                }, 
+                {
+                    id: "dot_notation",
+                    exp: "Use dot notation",
+                    tt: "Changes bracket notation to dot notation (a['b'] to a.b)",
+                    checked: true,
+                }, 
+                {
+                    id: "actual_value",
+                    exp: "Replace referenced constants", 
+                    tt: "Replaces references to constants with the constant value",
+                    checked: true,
+                }, 
+                {
+                    id: "comma_seperated",
+                    exp: "Clean up comma seperated",
+                    tt: "Cleans up comma seperated statements",
+                    checked: true,
+                }, 
+                {
+                    id: "concealed_strings",
+                    exp: "Deobfuscate concealed values",
+                    tt: "Changes hex numbers and strings to be more readable",
+                    checked: true,
+                }, 
+                {
+                    id: "remove_comments",
+                    exp: "Remove comments",
+                    tt: "",
+                    checked: true,
+                }, 
+                {
+                    id: "beautify",
+                    exp: "Beautify",
+                    tt: "",
+                    checked: true,
+                }, 
+                {
+                    id: "remove_useless_if",
+                    exp: "Remove useless if",
+                    tt: "Removes if statements that check a constant boolean, for example if (true) {}",
+                    checked: true,
+                }, 
+                {
+                    id: "rename_identifiers",
+                    exp: "Rename function arguments",
+                    tt: "Renames function arguments to paramA, paramB and so forth",
+                    checked: true,
+                }, 
+                {
+                    id: "cloudflare",
+                    exp: "Cloudflare specific",
+                    tt: "Specific transformations for the managed js/captcha challenge",
+                    checked: false,
+                }, 
+            ]
+
             hljs.highlightAll();
 
-            function escapeHTML( string )
-            {
+
+            const insertOptions = () => {
+                let elem = document.getElementById("options")
+                options.forEach(opt => {
+                    elem.innerHTML += `
+                    <div class="p-2 m-2 bg-gray-600 shadow-xl rounded-md flex flex-row">
+                        <input ${opt.checked ? "checked" : ""} type="checkbox" id="${opt.id}" name="${opt.id}" class="w-4 h-4 rounded border-gray-300 focus:ring-blue-600 ring-offset-gray-800 bg-gray-700 border-gray-600">
+                        <label for="${opt.id}" class="ml-2 text-sm font-medium text-gray-300">${opt.exp}</label>
+                        </div>
+                        `
+                    })
+            }
+
+            const escapeHTML = (string) => {
                 var pre = document.createElement('pre');
                 var text = document.createTextNode( string );
                 pre.appendChild(text);
@@ -40,25 +127,10 @@
                 const code = document.getElementById("code").value
                 const url = document.getElementById("url").value
 
-                const options = [
-                    "unused_code",
-                    "dead_else",
-                    "hidden_false",
-                    "dot_notation",
-                    "actual_value",
-                    "comma_seperated",
-                    "concealed_strings",
-                    "remove_comments",
-                    "beautify",
-                    "remove_useless_if",
-                    "rename_identifiers",
-                    "cloudflare"
-                ]
-
                 let chosen = {}
 
                 options.forEach(element => {
-                    chosen[element] = document.getElementById(element).checked
+                    chosen[element.id] = document.getElementById(element.id).checked
                 });
 
                 fetch("/api/deobfuscate", {
@@ -94,67 +166,8 @@
 		<h1 class="text-2xl m-3">Transformations</h1>
 
 
-        <div class="flex flex-wrap">
-            <div class="p-2 m-2 bg-gray-600 shadow-xl rounded-md flex flex-row">
-                <input type="checkbox" id="unused_code" name="unused_code" class="w-4 h-4 rounded border-gray-300 focus:ring-blue-600 ring-offset-gray-800 bg-gray-700 border-gray-600">
-                <label for="unused_code" class="ml-2 text-sm font-medium text-gray-300">Unused code</label>
-            </div>
-
-            <div class="p-2 m-2 bg-gray-600 shadow-xl rounded-md flex flex-row">
-                <input checked type="checkbox" id="dead_else" name="dead_else" class="w-4 h-4 rounded border-gray-300 focus:ring-blue-600 ring-offset-gray-800 bg-gray-700 border-gray-600">
-                <label for="dead_else" class="ml-2 text-sm font-medium text-gray-300">Dead else statements</label>
-            </div>
-
-            <div class="p-2 m-2 bg-gray-600 shadow-xl rounded-md flex flex-row">
-                <input checked type="checkbox" id="hidden_false" name="hidden_false" class="w-4 h-4 rounded border-gray-300 focus:ring-blue-600 ring-offset-gray-800 bg-gray-700 border-gray-600">
-                <label for="hidden_false" class="ml-2 text-sm font-medium text-gray-300">Hidden booleans</label>
-            </div>
-
-            <div class="p-2 m-2 bg-gray-600 shadow-xl rounded-md flex flex-row">
-                <input checked type="checkbox" id="dot_notation" name="unused_code" class="w-4 h-4 rounded border-gray-300 focus:ring-blue-600 ring-offset-gray-800 bg-gray-700 border-gray-600">
-                <label for="dot_notation" class="ml-2 text-sm font-medium text-gray-300">Change to dot notation</label>
-            </div>
-
-            <div class="p-2 m-2 bg-gray-600 shadow-xl rounded-md flex flex-row">
-                <input checked type="checkbox" id="actual_value" name="actual_value" class="w-4 h-4 rounded border-gray-300 focus:ring-blue-600 ring-offset-gray-800 bg-gray-700 border-gray-600">
-                <label for="actual_value" class="ml-2 text-sm font-medium text-gray-300">Replace references to constants</label>
-            </div>
-
-            <div class="p-2 m-2 bg-gray-600 shadow-xl rounded-md flex flex-row">
-                <input checked type="checkbox" id="comma_seperated" name="comma_seperated" class="w-4 h-4 rounded border-gray-300 focus:ring-blue-600 ring-offset-gray-800 bg-gray-700 border-gray-600">
-                <label for="comma_seperated" class="ml-2 text-sm font-medium text-gray-300">Clean up comma seperated</label>
-            </div>
-
-            <div class="p-2 m-2 bg-gray-600 shadow-xl rounded-md flex flex-row">
-                <input checked type="checkbox" id="concealed_strings" name="concealed_strings" class="w-4 h-4 rounded border-gray-300 focus:ring-blue-600 ring-offset-gray-800 bg-gray-700 border-gray-600">
-                <label for="concealed_strings" class="ml-2 text-sm font-medium text-gray-300">Concealed strings and numbers</label>
-            </div>
-
-            <div class="p-2 m-2 bg-gray-600 shadow-xl rounded-md flex flex-row">
-                <input checked type="checkbox" id="remove_comments" name="remove_comments" class="w-4 h-4 rounded border-gray-300 focus:ring-blue-600 ring-offset-gray-800 bg-gray-700 border-gray-600">
-                <label for="remove_comments" class="ml-2 text-sm font-medium text-gray-300">Remove comments</label>
-            </div>
-
-            <div class="p-2 m-2 bg-gray-600 shadow-xl rounded-md flex flex-row">
-                <input checked type="checkbox" id="remove_useless_if" name="remove_useless_if" class="w-4 h-4 rounded border-gray-300 focus:ring-blue-600 ring-offset-gray-800 bg-gray-700 border-gray-600">
-                <label for="remove_useless_if" class="ml-2 text-sm font-medium text-gray-300">Useless if statements</label>
-            </div>
-
-            <div class="p-2 m-2 bg-gray-600 shadow-xl rounded-md flex flex-row">
-                <input checked type="checkbox" id="beautify" name="beautify" class="w-4 h-4 rounded border-gray-300 focus:ring-blue-600 ring-offset-gray-800 bg-gray-700 border-gray-600">
-                <label for="beautify" class="ml-2 text-sm font-medium text-gray-300">Beautify</label>
-            </div>
-
-            <div class="p-2 m-2 bg-gray-600 shadow-xl rounded-md flex flex-row">
-                <input checked type="checkbox" id="rename_identifiers" name="rename_identifiers" class="w-4 h-4 rounded border-gray-300 focus:ring-blue-600 ring-offset-gray-800 bg-gray-700 border-gray-600">
-                <label for="rename_identifiers" class="ml-2 text-sm font-medium text-gray-300">Rename identifiers</label>
-            </div>
-
-            <div class="p-2 m-2 bg-gray-600 shadow-xl rounded-md flex flex-row">
-                <input type="checkbox" id="cloudflare" name="cloudflare" class="w-4 h-4 rounded border-gray-300 focus:ring-blue-600 ring-offset-gray-800 bg-gray-700 border-gray-600">
-                <label for="cloudflare" class="ml-2 text-sm font-medium text-gray-300">Is cloudflare js challenge</label>
-            </div>
-        </div>
+        <!-- Options are getting inserted here -->
+        <div class="flex flex-wrap" id="options"></div>
 
         <button onclick="deob()" class="bg-green-500 shadow-xl rounded-md p-3 px-4 m-2">Deobfuscate</button><br>
         
@@ -162,5 +175,58 @@
         <button onclick="download()" class="bg-green-500 shadow-xl rounded-md p-3 px-4 m-2">Download</button><br>
         
         <p id="loc"></p>
+
+         <h1 class="text-2xl m-3">Donate</h1>
+     <div class="flex flex-wrap text-sm">
+      <div
+        class="bg-blue-100 dark:bg-blue-900 dark:hover:bg-blue-800 rounded-md shadow p-3 m-3 hover:bg-blue-50 min-w-fit grow"
+      >
+        <h1 class="font-bold">Bitcoin (BTC)</h1>
+        <p class="text-xl break-all" id="btc">bc1qc2av8uc7fdzr9696uqcqtdf2hl25rgmnvm9ys4</p>
+      </div>
+      <div
+        class="bg-red-100 dark:bg-red-900 dark:hover:bg-red-800 rounded-md shadow p-3 m-3 hover:bg-red-50 min-w-fit grow"
+        data-clipboard-target="#sol"
+      >
+        <h1 class="font-bold">Solana (SOL)</h1>
+        <p class="text-xl break-all" id="sol">DCCuNLirA9hXPHJGmCVhrkG6Kh4E2w8Bu6HHnXLbm78L</p>
+      </div>
+      <div
+        class="bg-green-100 dark:bg-green-900 dark:hover:bg-green-800 rounded-md shadow p-3 m-3 hover:bg-green-50 min-w-fit grow"
+        data-clipboard-target="#eth"
+      >
+        <h1 class="font-bold">Ethereum (ETH)</h1>
+        <p class="text-xl break-all" id="eth">0x3dEe894fd880816b1205dE915A00a42c85C44502</p>
+      </div>
+
+    <div
+        class="copy bg-violet-100 dark:bg-violet-900 dark:hover:bg-violet-800 rounded-md shadow p-3 m-3 hover:bg-violet-50 min-w-fit grow"
+        data-clipboard-target="#xmr"
+        >
+        <h1 class="font-bold">Monero (XMR)</h1>
+        <p class="text-xl break-all" id="xmr">45jQVd3NnUxPVqDxqdYzA9hbfUDfygLhTiSY1c9mjiYEKL2YcLk4G9E48mRpA2Nd3m4hLxqwy8Y6TBJaAjAiyFazK5SpV1g</p>
+      </div>
+
+    </div>
+
+    <h1 class="text-2xl m-3">Contact</h1>
+    <p class="m-3  text-sm">Please don't contact me for general programming help.</p>
+    <div class="flex flex-wrap  text-sm">
+      <div
+        class="bg-blue-100 dark:bg-blue-900 dark:hover:bg-blue-800 rounded-md shadow p-3 m-3 hover:bg-blue-50 min-w-fit grow"
+
+      >
+        <h1 class="font-bold">Discord</h1>
+        <p class="text-xl break-all">Peet#4245</p>
+      </div>
+      <div
+        class="bg-yellow-100 dark:bg-sky-900 dark:hover:bg-sky-800 rounded-md shadow p-3 m-3 hover:bg-yellow-50 min-w-fit grow"
+
+      >
+        <h1 class="font-bold">E-Mail</h1>
+        <p class="text-xl break-all">deob@peet.ws</p>
+      </div>
+
+    </div>
 	</body>
 </html>
