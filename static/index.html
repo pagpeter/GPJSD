@@ -13,6 +13,14 @@
         <script>
             hljs.highlightAll();
 
+            function escapeHTML( string )
+            {
+                var pre = document.createElement('pre');
+                var text = document.createTextNode( string );
+                pre.appendChild(text);
+                return pre.innerHTML;
+            }
+        
             const download = () => {
                 const filename = "deobfuscated.js"
                 const text = window.deobbed
@@ -65,12 +73,12 @@
                 }).then((data) => {
                     if (data.error) {
                         window.deobbed = data.result
-                        document.getElementById("result").innerHTML = data.result
+                        document.getElementById("result").innerHTML = escapeHTML(data.result)
                         alert(data.error) 
                         return
                     }
                     window.deobbed = data.result
-                    document.getElementById("result").innerHTML = data.result
+                    document.getElementById("result").innerHTML = escapeHTML(data.result)
                     hljs.highlightAll();
                     document.getElementById("loc").innerText = "Lines of code: " + data.result.split("\n").length
                 })
