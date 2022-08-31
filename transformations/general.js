@@ -39,6 +39,87 @@ const deobfuscate_object_calls = (ast) => {
  
 }
 
+// https://steakenthusiast.github.io/2022/05/28/Deobfuscating-Javascript-via-AST-Manipulation-Constant-Folding/#Examples
+const constant_folding = (ast) => {
+   // Visitor for constant folding
+  const foldConstantsVisitor = {
+    BinaryExpression(path) {
+      const left = path.get("left");
+      const right = path.get("right");
+      const operator = path.get("operator").node;
+
+      if (t.isStringLiteral(left.node) && t.isStringLiteral(right.node)) {
+        // In this case, we can use the old algorithm
+        // Evaluate the binary expression
+        let { confident, value } = path.evaluate();
+        // Skip if not confident
+        if (!confident) return;
+        // Create a new node, infer the type
+        let actualVal = t.valueToNode(value);
+        // Skip if not a Literal type (e.g. StringLiteral, NumericLiteral, Boolean Literal etc.)
+        if (!t.isStringLiteral(actualVal)) return;
+        // Replace the BinaryExpression with the simplified value
+        path.replaceWith(actualVal);
+      } else {
+        // Check if the right side is a StringLiteral. If it isn't, skip this node by returning.
+        if (!t.isStringLiteral(right.node)) return;
+        //Check if the right sideis a StringLiteral. If it isn't, skip this node by returning.
+        if (!t.isStringLiteral(left.node.right)) return;
+        // Check if the operator is addition (+). If it isn't, skip this node by returning.
+        if (operator !== "+") return;
+
+        // If all conditions are fine:
+
+        // Evaluate the _right-most edge of the left-side_ + the right side;
+        let concatResult = t.StringLiteral(
+          left.node.right.value + right.node.value
+        );
+        // Replace the _right-most edge of the left-side_ with `concatResult`.
+        left.get("right").replaceWith(concatResult);
+        //Remove the original right side of the expression as it is now a duplicate.
+        right.remove();
+      }
+    },
+  };
+
+  // Execute the visitor
+  traverse(ast, foldConstantsVisitor);
+}
+
+// https://steakenthusiast.github.io/2022/06/14/Deobfuscating-Javascript-via-AST-Deobfuscating-a-Peculiar-JSFuck-style-Case/
+const deobfuscate_jsfuck = (ast) => {
+  const fixArrays = {
+    ArrayExpression(path) {
+      for (elem of path.get("elements")) {
+        if (!elem.node) {
+          elem.replaceWith(t.valueToNode(undefined));
+        }
+      }
+    },
+  };
+
+  traverse(ast, fixArrays);
+
+  // Visitor for constant folding
+  const constantFold = {
+    "BinaryExpression|UnaryExpression"(path) {
+      const { node } = path;
+      if (
+        t.isUnaryExpression(node) &&
+        (node.operator == "-" || node.operator == "void")
+      )
+        return;
+      let { confident, value } = path.evaluate(); // Evaluate the binary expression
+      if (!confident || value == Infinity || value == -Infinity) return; // Skip if not confident
+
+      path.replaceWith(t.valueToNode(value)); // Replace the BinaryExpression with a new node of inferred type
+    },
+  };
+
+  //Execute the visitor
+  traverse(ast, constantFold);
+}
+
 const deobfuscate_hidden_false = (ast) => {
   // change !![] to true and ![] to true and !1 to false
   const deob = {
@@ -343,4 +424,6 @@ module.exports = {
   remove_hex_numbers,
   remove_useless_if,
   rename_identifiers,
+  deobfuscate_jsfuck,
+  constant_folding,
 };

@@ -3,7 +3,7 @@
 		<title>General purpose JS deobber</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <script src="https://cdn.tailwindcss.com"></script>
+        <script src="tailwind.js"></script>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.6.0/build/styles/default.min.css">
         <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.6.0/build/highlight.min.js"></script>
         <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.6.0/build/languages/javascript.min.js"></script>
@@ -24,12 +24,12 @@
                     tt: "",
                     checked: true,
                 }, 
-                {
-                    id: "hidden_false",
-                    exp: "Deobfuscate booleans",
-                    tt: "Example: changes ![] to false or !![] to true",
-                    checked: true,
-                }, 
+                // {
+                //     id: "hidden_false",
+                //     exp: "Deobfuscate booleans",
+                //     tt: "Example: changes ![] to false or !![] to true",
+                //     checked: true,
+                // }, 
                 {
                     id: "dot_notation",
                     exp: "Use dot notation",
@@ -78,12 +78,18 @@
                     tt: "Renames function arguments to paramA, paramB and so forth",
                     checked: true,
                 }, 
+                // {
+                //     id: "cloudflare",
+                //     exp: "Cloudflare specific",
+                //     tt: "Specific transformations for the managed js/captcha challenge",
+                //     checked: false,
+                // }, 
                 {
-                    id: "cloudflare",
-                    exp: "Cloudflare specific",
-                    tt: "Specific transformations for the managed js/captcha challenge",
-                    checked: false,
-                }, 
+                    id: "constant_folding",
+                    exp: "Constant folding",
+                    tt: "An optimization technique that eliminates expressions that calculate a value that can already be determined before code execution",
+                    checked: true,
+                }
             ]
 
             hljs.highlightAll();
@@ -228,5 +234,10 @@
       </div>
 
     </div>
+
+    <h1 class="text-2xl m-3">Credits</h1>
+
+    <p class="m-3">This site was made by Peet.</p>
+    <p class="m-3">Thanks a lot to <a class="text-blue-300" href="https://steakenthusiast.github.io/">PianoMan</a></p>
 	</body>
 </html>

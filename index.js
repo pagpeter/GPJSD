@@ -35,6 +35,7 @@ const deobfuscate = (code, opts) => {
     if (opts.dead_else) deob.remove_dead_else(ast)
     if (opts.remove_useless_if) deob.remove_useless_if(ast)
     if (opts.rename_identifiers && !opts.cloudflare) deob.rename_identifiers(ast)
+    if (opts.constant_folding) {deob.constant_folding(ast); deob.deobfuscate_jsfuck(ast)}
 
     if (opts.cloudflare) cloudflare(ast)
 
